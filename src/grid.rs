@@ -300,7 +300,6 @@ impl Grid {
     }
 
     /// Advect the velocity of the cells in the grid
-    // Modification de advect_velocity pour une staggered grid
     pub fn advect_velocity(&mut self, dt: f32) {
         let dt0 = dt * N;
         let mut new_u = vec![0.0; self.cells.len()];
@@ -533,9 +532,9 @@ impl Grid {
 
                 // Calculer div = ∂u/∂x + ∂v/∂y
                 // Pour une staggered grid, la divergence utilise directement les vitesses aux interfaces
-                let u_right = self.get_u(i+1, j);   // u à droite de la cellule (i,j)
+                let u_right = self.get_u(i + 1, j);   // u à droite de la cellule (i,j)
                 let u_left = self.get_u(i, j);      // u à gauche de la cellule (i,j)
-                let v_top = self.get_v(i, j+1);     // v en haut de la cellule (i,j)
+                let v_top = self.get_v(i, j + 1);     // v en haut de la cellule (i,j)
                 let v_bottom = self.get_v(i, j);    // v en bas de la cellule (i,j)
 
                 div[idx] = -h * ((u_right - u_left) + (v_top - v_bottom));
@@ -555,26 +554,26 @@ impl Grid {
                     }
 
                     // Calculer la nouvelle pression en utilisant Gauss-Seidel
-                    let p_left = if i > 1 && !self.cells[self.to_index(i-1, j)].wall {
-                        pressure[self.to_index(i-1, j)]
+                    let p_left = if i > 1 && !self.cells[self.to_index(i - 1, j)].wall {
+                        pressure[self.to_index(i - 1, j)]
                     } else {
                         pressure[idx] // Réflexion à la paroi
                     };
 
-                    let p_right = if i < N as usize && !self.cells[self.to_index(i+1, j)].wall {
-                        pressure[self.to_index(i+1, j)]
+                    let p_right = if i < N as usize && !self.cells[self.to_index(i + 1, j)].wall {
+                        pressure[self.to_index(i + 1, j)]
                     } else {
                         pressure[idx] // Réflexion à la paroi
                     };
 
-                    let p_bottom = if j > 1 && !self.cells[self.to_index(i, j-1)].wall {
-                        pressure[self.to_index(i, j-1)]
+                    let p_bottom = if j > 1 && !self.cells[self.to_index(i, j - 1)].wall {
+                        pressure[self.to_index(i, j - 1)]
                     } else {
                         pressure[idx] // Réflexion à la paroi
                     };
 
-                    let p_top = if j < N as usize && !self.cells[self.to_index(i, j+1)].wall {
-                        pressure[self.to_index(i, j+1)]
+                    let p_top = if j < N as usize && !self.cells[self.to_index(i, j + 1)].wall {
+                        pressure[self.to_index(i, j + 1)]
                     } else {
                         pressure[idx] // Réflexion à la paroi
                     };
@@ -599,7 +598,7 @@ impl Grid {
                     if !self.cells[idx].wall {
                         // Corriger u(i,j) (vitesse horizontale à la face de gauche de la cellule)
                         let p_left = if i > 1 {
-                            pressure[self.to_index(i-1, j)]
+                            pressure[self.to_index(i - 1, j)]
                         } else {
                             pressure[idx] // Réflexion à la frontière
                         };
@@ -615,7 +614,7 @@ impl Grid {
                     if !self.cells[idx].wall {
                         // Corriger v(i,j) (vitesse verticale à la face du bas de la cellule)
                         let p_bottom = if j > 1 {
-                            pressure[self.to_index(i, j-1)]
+                            pressure[self.to_index(i, j - 1)]
                         } else {
                             pressure[idx] // Réflexion à la frontière
                         };
